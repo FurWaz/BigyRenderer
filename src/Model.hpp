@@ -1,19 +1,20 @@
 #pragma once
 #include <string>
+#include "Object.hpp"
 #include "Triangle.hpp"
-#include "Vec3.hpp"
+#include "Point.hpp"
 
-class Model
+class Model: public Object
 {
 public:
-    Vec3f* vertices;
+    Point* vertices;
     size_t n_vertices;
 
     Triangle* triangles;
     size_t n_triangles;
 
     Model();
-    Model(Vec3f* vertices, size_t n_vertices, Triangle* triangles, size_t n_triangles);
+    Model(Point* vertices, size_t n_vertices, Triangle* triangles, size_t n_triangles);
     Model(const Model &other);
     ~Model();
 

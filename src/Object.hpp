@@ -8,6 +8,8 @@ public:
     Vec3f position;
     Quaternion rotation;
 
+    Vec3f forward() const;
+
     Object();
     Object(const Vec3f &position, const Quaternion &rotation);
     Object(const Object &other);

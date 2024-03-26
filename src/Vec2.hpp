@@ -21,6 +21,7 @@ public:
     Vec2 operator/(T scalar) const { return Vec2(x / scalar, y / scalar); }
     Vec2 operator*=(T scalar) { return *this = *this * scalar; }
     Vec2 operator/=(T scalar) { return *this = *this / scalar; }
+
     friend std::ostream& operator<<(std::ostream& os, const Vec2& dt)
     {
         os << "(" << dt.x << ", " << dt.y << ")";

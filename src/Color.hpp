@@ -11,6 +11,7 @@ public:
     static const Color BLUE;
 
     static Color FromArray(unsigned char *data, int channels);
+    static Color random();
 
     unsigned char r, g, b, a;
 
@@ -18,6 +19,9 @@ public:
     Color(unsigned char r, unsigned char g, unsigned char b, unsigned char a = 255);
     Color(const Color &other);
     ~Color();
+    
+    Color operator*(float scalar);
+    Color operator/(float scalar);
 
     const Color hover(const Color &other);
     const Color mix(const Color &other, float ratio);

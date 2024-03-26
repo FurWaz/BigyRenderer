@@ -1,4 +1,5 @@
 #include <iostream>
+#include <algorithm>
 #include "Color.hpp"
 
 const Color Color::TRANSPARENT = Color(0, 0, 0, 0);
@@ -18,6 +19,15 @@ Color Color::FromArray(unsigned char *data, int channels)
             std::cerr << "Error : Unsupported number of channels! (" << channels << ")" << std::endl;
             return Color::BLACK;
     }
+}
+
+Color Color::random()
+{
+    return Color(
+        (unsigned char) (rand() % 256),
+        (unsigned char) (rand() % 256),
+        (unsigned char) (rand() % 256)
+    );
 }
 
 Color::Color()
@@ -41,6 +51,26 @@ Color::Color(const Color &other)
 Color::~Color()
 {
 
+}
+
+Color Color::operator*(float scalar)
+{
+    return Color(
+        (unsigned char) (std::min((float) r * scalar, 255.0f)),
+        (unsigned char) (std::min((float) g * scalar, 255.0f)),
+        (unsigned char) (std::min((float) b * scalar, 255.0f)),
+        a
+    );
+}
+
+Color Color::operator/(float scalar)
+{
+    return Color(
+        (unsigned char) (r / scalar),
+        (unsigned char) (g / scalar),
+        (unsigned char) (b / scalar),
+        a
+    );
 }
 
 const Color Color::hover(const Color &other)
