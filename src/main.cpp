@@ -43,8 +43,8 @@ int main(int argc, char const *argv[])
     float rot = 0;
     while (loop)
     {
-        rot += (sin(rot*2.3f) + 1.3f) / 10.f;
-        camera.rotation = Quaternion::Euler(0, 0, 0);
+        rot += 0.1f;
+        model.rotation = Quaternion::Euler(0, rot, 0);
 
         image.clear(Color::BLACK);
         Renderer::RenderModel(image, camera, model);
