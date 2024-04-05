@@ -80,10 +80,3 @@ Vec3f Quaternion::operator*(const Vec3f& v) const
     Quaternion q = *this * p * conjugate();
     return Vec3f(q.x, q.y, q.z);
 }
-
-Point Quaternion::operator*(const Point& p) const
-{
-    Vec3f pos = *this * p.position;
-    Vec3f norm = *this * p.normal;
-    return Point(pos, norm);
-}

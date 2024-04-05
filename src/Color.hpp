@@ -20,10 +20,12 @@ public:
     Color(const Color &other);
     ~Color();
     
+    Color operator*(const Color& other);
+    Color operator+=(const Color& other);
     Color operator*(float scalar);
     Color operator/(float scalar);
 
-    const Color hover(const Color &other);
-    const Color mix(const Color &other, float ratio);
+    const Color hover(const Color& other);
+    const Color mix(const Color& other, float ratio);
     void toArray(unsigned char *data, int index);
 };

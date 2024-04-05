@@ -53,6 +53,26 @@ Color::~Color()
 
 }
 
+Color Color::operator*(const Color& other)
+{
+    return Color(
+        (unsigned char) ((float) r * other.r / 255.0f),
+        (unsigned char) ((float) g * other.g / 255.0f),
+        (unsigned char) ((float) b * other.b / 255.0f),
+        (unsigned char) ((float) a * other.a / 255.0f)
+    );
+}
+
+Color Color::operator+=(const Color& other)
+{
+    r = std::min((int) r + other.r, 255);
+    g = std::min((int) g + other.g, 255);
+    b = std::min((int) b + other.b, 255);
+    a = std::min((int) a + other.a, 255);
+
+    return *this;
+}
+
 Color Color::operator*(float scalar)
 {
     return Color(

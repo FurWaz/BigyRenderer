@@ -28,11 +28,14 @@ Image::Image(const Image &other)
     if (other.data)
     {
         data = new Color[width * height];
+        for (size_t i = 0; i < width * height; i++)
+            data[i] = Color(other.data[i]);
+    }
+    if (other.depth)
+    {
+        depth = new float[width * height];
         for (int i = 0; i < width * height; i++)
-        {
-            data[i] = other.data[i];
             depth[i] = other.depth[i];
-        }
     }
 }
 

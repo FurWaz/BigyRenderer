@@ -1,4 +1,5 @@
-#include "Point.hpp"
+#pragma once
+#include "Vec3.hpp"
 
 class Quaternion
 {
@@ -23,5 +24,4 @@ public:
     Quaternion operator-() const;
 
     Vec3f operator*(const Vec3f& v) const;
-    Point operator*(const Point& p) const;
 };

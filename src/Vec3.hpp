@@ -14,6 +14,7 @@ public:
 
     Vec3 cross(const Vec3 &other) const;
     float dot(const Vec3 &other) const;
+    float length() const { return sqrt(x*x + y*y + z*z); }
     Vec3 normalize() const;
 
     Vec3 &operator=(const Vec3 &other);

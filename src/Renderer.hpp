@@ -1,10 +1,13 @@
 #pragma once
 #include <iostream>
 #include <algorithm>
+#include <vector>
 #include "Camera.hpp"
 #include "Image.hpp"
-#include "Model.hpp"
+#include "Mesh.hpp"
+#include "Material.hpp"
 #include "Vec2.hpp"
+#include "Light.hpp"
 
 Vec3f barycentric(Vec2i p1, Vec2i p2, Vec2i p3, Vec2i p)
 {
@@ -21,8 +24,9 @@ namespace Renderer
 {
     Vec2i CameraToScreen(const Image &im, const Vec3f& point)
     {
+        float ratio = im.width / (float) im.height;
         Vec2f screen(
-            point.x / -point.z,
+            (point.x / ratio) / -point.z,
             point.y / -point.z
         );
         return Vec2i(
@@ -62,39 +66,36 @@ namespace Renderer
         }
     }
 
-    void RenderModel(Image& im, const Camera& cam, const Model& model)
+    void RenderMesh(Image& im, const Camera& cam, const Mesh& mesh, std::vector<Light*> lights)
     {
+        Quaternion antiCamRot = cam.rotation.conjugate();
+
         // calculate projected vertices
-        Vec2i* projected = new Vec2i[model.n_vertices];
-        Point* points = new Point[model.n_vertices];
-        for (size_t i = 0; i < model.n_vertices; i++)
+        Vec2i* projected = new Vec2i[mesh.n_vertices];
+        Vec3f* verts = new Vec3f[mesh.n_vertices];
+        Vec3f* norms = new Vec3f[mesh.n_normals];
+
+        for (size_t i = 0; i < mesh.n_vertices; i++)
         {
-            // apply model rotation + translation
-            points[i] = (model.rotation * model.vertices[i]);
-            points[i].position += model.position;
+            // apply mesh rotation + translation
+            verts[i] = (mesh.rotation * mesh.vertices[i]) + mesh.position;
+            norms[i] = mesh.rotation * mesh.normals[i];
 
             // apply camera transformation
-            Quaternion antiCamRot = cam.rotation.conjugate();
-            points[i].position = antiCamRot * (points[i].position - cam.position);
-            points[i].normal = antiCamRot * points[i].normal;
+            verts[i] = antiCamRot * (verts[i] - cam.position);
+            norms[i] = antiCamRot * norms[i];
 
-            projected[i] = CameraToScreen(im, points[i].position);
+            projected[i] = CameraToScreen(im, verts[i]);
         }
 
         // render triangles (filling the depth buffer too)
-        for (size_t i = 0; i < model.n_triangles; i++)
+        for (size_t i = 0; i < mesh.n_triangles; i++)
         {
-            Triangle& tri = model.triangles[i];
-            Vec3f normal = (points[tri.vert_i[1]].position - points[tri.vert_i[0]].position).normalize()
-                .cross((points[tri.vert_i[2]].position - points[tri.vert_i[0]].position).normalize());
+            Triangle& tri = mesh.triangles[i];
 
-            // NOTE : Commented because o artifacts when weird rotations
-            // float orient = cam.forward().dot(normal);
-            // if (orient < 0.f) continue;
-
-            Vec2i p1 = projected[tri.vert_i[0]];
-            Vec2i p2 = projected[tri.vert_i[1]];
-            Vec2i p3 = projected[tri.vert_i[2]];
+            Vec2i p1 = projected[tri.ver_i[0]];
+            Vec2i p2 = projected[tri.ver_i[1]];
+            Vec2i p3 = projected[tri.ver_i[2]];
 
             Vec2i b1(
                 std::min(std::min(p1.x, p2.x), p3.x),
@@ -118,21 +119,47 @@ namespace Renderer
                     Vec3f bary = barycentric(p1, p2, p3, p);
                     if (bary.x < 0 || bary.y < 0 || bary.z < 0) continue;
 
-                    float pixelDepth = bary.x * points[tri.vert_i[0]].position.z +
-                        bary.y * points[tri.vert_i[1]].position.z +
-                        bary.z * points[tri.vert_i[2]].position.z;
+                    float pixelDepth = bary.x * verts[tri.ver_i[0]].z +
+                        bary.y * verts[tri.ver_i[1]].z +
+                        bary.z * verts[tri.ver_i[2]].z;
                     pixelDepth = -pixelDepth;
 
                     if (pixelDepth < 0) continue;
                     if (pixelDepth < im.getDepth(x, y))
                     {
-                        Color color(
-                            (unsigned char) (((normal.x + 1) / 2) * 255.f), 
-                            (unsigned char) (((normal.y + 1) / 2) * 255.f), 
-                            (unsigned char) (((normal.z + 1) / 2) * 255.f)
+                        Vec3f normal = (norms[tri.nor_i[0]] * bary.x +
+                            norms[tri.nor_i[1]] * bary.y +
+                            norms[tri.nor_i[2]] * bary.z).normalize();
+                        
+                        Vec3f position = verts[tri.ver_i[0]] * bary.x +
+                            verts[tri.ver_i[1]] * bary.y +
+                            verts[tri.ver_i[2]] * bary.z;
+
+                        Vec2f texCoord = mesh.textures[tri.tex_i[0]] * bary.x +
+                            mesh.textures[tri.tex_i[1]] * bary.y +
+                            mesh.textures[tri.tex_i[2]] * bary.z;
+
+                        const Image& tex = mesh.material.texture;
+                        Vec2i imCoord = Vec2i(
+                            (int) (texCoord.x * tex.width),
+                            (int) ((1.f-texCoord.y) * tex.height)
                         );
+
+                        Color texColor = tex.getPixel(imCoord.x, imCoord.y);
+                        Color finalColor(0, 0, 0);
+
+                        // get light intensity
+                        for (Light* light : lights)
+                        {
+                            Vec3f shift = (light->position - position);
+                            Vec3f lightDir = shift.normalize();
+                            float dist = shift.length();
+                            float diff = std::max(0.0f, normal.dot(lightDir));
+                            finalColor += texColor * diff * light->intensity * std::clamp(dist / light->range, 0.f, 1.f) * light->color;
+                        }
+
                         im.setDepth(x, y, pixelDepth);
-                        im.setPixel(x, y, color);
+                        im.setPixel(x, y, finalColor);
                     }
                 }
             }
@@ -140,6 +167,7 @@ namespace Renderer
 
         // free memory
         delete[] projected;
-        delete[] points;
+        delete[] verts;
+        delete[] norms;
     }
 }
