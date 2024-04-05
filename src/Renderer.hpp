@@ -4,7 +4,7 @@
 #include <vector>
 #include "Camera.hpp"
 #include "Image.hpp"
-#include "Mesh.hpp"
+#include "Model.hpp"
 #include "Material.hpp"
 #include "Vec2.hpp"
 #include "Light.hpp"
@@ -66,9 +66,10 @@ namespace Renderer
         }
     }
 
-    void RenderMesh(Image& im, const Camera& cam, const Mesh& mesh, std::vector<Light*> lights)
+    void RenderModel(Image& im, const Camera& cam, const Model& model, std::vector<Light*> lights)
     {
         Quaternion antiCamRot = cam.rotation.conjugate();
+        const Mesh& mesh = model.mesh;
 
         // calculate projected vertices
         Vec2i* projected = new Vec2i[mesh.n_vertices];
@@ -127,35 +128,55 @@ namespace Renderer
                     if (pixelDepth < 0) continue;
                     if (pixelDepth < im.getDepth(x, y))
                     {
+                        // interpolate normal
                         Vec3f normal = (norms[tri.nor_i[0]] * bary.x +
                             norms[tri.nor_i[1]] * bary.y +
                             norms[tri.nor_i[2]] * bary.z).normalize();
                         
+                        // interpolate position
                         Vec3f position = verts[tri.ver_i[0]] * bary.x +
                             verts[tri.ver_i[1]] * bary.y +
                             verts[tri.ver_i[2]] * bary.z;
 
+                        // interpolate texture coord
                         Vec2f texCoord = mesh.textures[tri.tex_i[0]] * bary.x +
                             mesh.textures[tri.tex_i[1]] * bary.y +
                             mesh.textures[tri.tex_i[2]] * bary.z;
 
-                        const Image& tex = mesh.material.texture;
-                        Vec2i imCoord = Vec2i(
-                            (int) (texCoord.x * tex.width),
-                            (int) ((1.f-texCoord.y) * tex.height)
+                        // get texture color
+                        const Image& texDiffuse = model.material.diffuse;
+                        Vec2i imCoordDiffuse = Vec2i(
+                            (int) (texCoord.x * texDiffuse.width),
+                            (int) ((1.f-texCoord.y) * texDiffuse.height)
                         );
 
-                        Color texColor = tex.getPixel(imCoord.x, imCoord.y);
+                        // add normal map
+                        const Image& texNormal = model.material.normal;
+                        Vec2i imCoordNormal = Vec2i(
+                            (int) (texCoord.x * texNormal.width),
+                            (int) ((1.f-texCoord.y) * texNormal.height)
+                        );
+                        Color normalColor = texNormal.getPixel(imCoordNormal.x, imCoordNormal.y);
+                        Vec3f mapNormal(
+                            (normalColor.r - 128) / 128.f,
+                            (normalColor.g - 128) / 128.f,
+                            (normalColor.b - 128) / 128.f
+                        );
+                        normal = (normal + antiCamRot * mapNormal).normalize();
+
+                        Color texColor = texDiffuse.getPixel(imCoordDiffuse.x, imCoordDiffuse.y);
                         Color finalColor(0, 0, 0);
 
                         // get light intensity
                         for (Light* light : lights)
                         {
-                            Vec3f shift = (light->position - position);
+                            Vec3f lightCamPos = antiCamRot * (light->position - cam.position);
+                            Vec3f shift = (lightCamPos - position);
                             Vec3f lightDir = shift.normalize();
                             float dist = shift.length();
-                            float diff = std::max(0.0f, normal.dot(lightDir));
-                            finalColor += texColor * diff * light->intensity * std::clamp(dist / light->range, 0.f, 1.f) * light->color;
+                            float angle = std::max(0.0f, normal.dot(lightDir));
+                            float range = std::clamp(1 - (dist / light->range), 0.0f, 1.0f);
+                            finalColor += texColor * light->color * angle * range * light->intensity;
                         }
 
                         im.setDepth(x, y, pixelDepth);
@@ -169,5 +190,34 @@ namespace Renderer
         delete[] projected;
         delete[] verts;
         delete[] norms;
+    }
+
+    void RenderLights(Image& im, const Camera& cam, std::vector<Light*> lights)
+    {
+        Quaternion antiCamRot = cam.rotation.conjugate();
+        float lightRadius = 4.f;
+
+        for (Light* light : lights)
+        {
+            Vec3f cameraPoint = antiCamRot * (light->position - cam.position);
+            Vec2i p = CameraToScreen(im, cameraPoint);
+
+            float radius = 4.f;
+            Vec2i min = Vec2i(std::max(0, p.x - (int) radius),        std::max(0, p.y - (int) radius));
+            Vec2i max = Vec2i(std::min(im.width, p.x + (int) radius), std::min(im.height, p.y + (int) radius));
+
+            for (int x = min.x; x < max.x; x++)
+            {
+                for (int y = min.y; y < max.y; y++)
+                {
+                    Vec2i p2(x, y);
+                    if ((p2 - p).length() > radius || !im.pixelCheck(p2.x, p2.y) || im.getDepth(p2.x, p2.y) < -cameraPoint.z)
+                        continue;
+                    
+                    im.setDepth(p2.x, p2.y, -cameraPoint.z);
+                    im.setPixel(p2.x, p2.y, light->color);
+                }
+            }
+        }
     }
 }

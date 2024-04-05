@@ -190,5 +190,10 @@ namespace MeshLoader
             normalsArr, normalsCount,
             trianglesArr, trianglesCount
         );
+
+        delete[] verticesArr;
+        delete[] texturesArr;
+        delete[] normalsArr;
+        delete[] trianglesArr;
     }
 }

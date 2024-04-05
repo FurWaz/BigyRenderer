@@ -14,9 +14,11 @@ public:
     
     Image();
     Image(int width, int height);
-    Image(std::string path);
+    Image(std::string path, bool load = false);
     Image(const Image &other);
     ~Image();
+
+    const bool valid() const;
 
     void save(std::string path = "");
     void saveDepth(std::string path = "");

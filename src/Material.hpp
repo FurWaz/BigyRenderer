@@ -4,8 +4,12 @@
 class Material
 {
 public:
-    Image texture;
+    Image diffuse;
+    Image normal;
 
     Material();
+    Material(Image diffuse, Image normal);
     ~Material();
+
+    const bool valid() const;
 };

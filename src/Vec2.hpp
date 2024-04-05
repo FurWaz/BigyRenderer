@@ -12,6 +12,8 @@ public:
     Vec2(const Vec2 &other);
     ~Vec2();
 
+    float length() const { return sqrt((float) (x*x + y*y)); }
+
     Vec2 &operator=(const Vec2 &other);
     Vec2 operator+(const Vec2 &other) const;
     Vec2 operator-(const Vec2 &other) const;

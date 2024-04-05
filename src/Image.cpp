@@ -16,33 +16,32 @@ Image::Image(int width, int height)
         depth[i] = std::numeric_limits<float>::infinity();
 }
 
-Image::Image(std::string path)
+Image::Image(std::string path, bool load)
     : data(nullptr), depth(nullptr), width(0), height(0), path(path)
 {
-
+    if (load) this->load();
 }
 
 Image::Image(const Image &other)
-    : data(nullptr), depth(nullptr), width(other.width), height(other.height), path(other.path)
+    : data(new Color[other.width * other.height]),
+      depth(new float[other.width * other.height]),
+      width(other.width), height(other.height), path(other.path)
 {
-    if (other.data)
-    {
-        data = new Color[width * height];
-        for (size_t i = 0; i < width * height; i++)
-            data[i] = Color(other.data[i]);
-    }
-    if (other.depth)
-    {
-        depth = new float[width * height];
-        for (int i = 0; i < width * height; i++)
-            depth[i] = other.depth[i];
-    }
+    for (size_t i = 0; i < width * height; i++)
+        data[i] = Color(other.data[i]);
+    for (size_t i = 0; i < width * height; i++)
+        depth[i] = other.depth[i];
 }
 
 Image::~Image()
 {
     if (data) delete[] data;
     if (depth) delete[] depth;
+}
+
+const bool Image::valid() const
+{
+    return width > 0 && height > 0;
 }
 
 void Image::save(std::string path)
