@@ -22,7 +22,7 @@ namespace ModelLoader
             files[filetype] = entry.path().string();
         }
         
-        std::string required[] = {"mesh", "diffuse", "normal"};
+        std::string required[] = {"mesh", "diffuse", "normal", "specular"};
         for (const std::string& name : required)
         {
             if (files.find(name) == files.end())
@@ -35,6 +35,7 @@ namespace ModelLoader
         std::string meshPath = files["mesh"];
         std::string diffusePath = files["diffuse"];
         std::string normalPath = files["normal"];
+        std::string specularPath = files["specular"];
 
         Mesh mesh = MeshLoader::FromFile(meshPath);
         if (!mesh.valid())
@@ -56,8 +57,15 @@ namespace ModelLoader
             std::cerr << "Error: Invalid normal image" << std::endl;
             return Model(); // invalid model to indicate failure
         }
+
+        Image specular(specularPath, true);
+        if (!specular.valid())
+        {
+            std::cerr << "Error: Invalid specular image" << std::endl;
+            return Model(); // invalid model to indicate failure
+        }
         
-        Material material(diffuse, normal);
+        Material material(diffuse, normal, specular);
 
         return Model(mesh, material);
     }

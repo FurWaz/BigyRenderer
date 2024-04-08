@@ -164,6 +164,14 @@ namespace Renderer
                         );
                         normal = (normal + antiCamRot * mapNormal).normalize();
 
+                        // get specular map
+                        const Image& texSpecular = model.material.specular;
+                        Vec2i imCoordSpecular = Vec2i(
+                            (int) (texCoord.x * texSpecular.width),
+                            (int) ((1.f-texCoord.y) * texSpecular.height)
+                        );
+                        float specularColor = texSpecular.getPixel(imCoordSpecular.x, imCoordSpecular.y).r / 255.f;
+
                         Color texColor = texDiffuse.getPixel(imCoordDiffuse.x, imCoordDiffuse.y);
                         Color finalColor(0, 0, 0);
 
@@ -174,7 +182,7 @@ namespace Renderer
                             Vec3f shift = (lightCamPos - position);
                             Vec3f lightDir = shift.normalize();
                             float dist = shift.length();
-                            float angle = std::max(0.0f, normal.dot(lightDir));
+                            float angle = std::max(0.0f, pow(normal.dot(lightDir), specularColor * 32.f + 1.f));
                             float range = std::clamp(1 - (dist / light->range), 0.0f, 1.0f);
                             finalColor += texColor * light->color * angle * range * light->intensity;
                         }
