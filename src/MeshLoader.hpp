@@ -68,6 +68,7 @@ namespace MeshLoader
                             default:
                                 break;
                         }
+                        break;
                     }
                     default:
                         break;
@@ -76,9 +77,7 @@ namespace MeshLoader
                     break;
                 case COMMENT:
                     if (content[cursor] == '\n')
-                    {
                         type = LineType::UNKNOWN;
-                    }
                     break;
                 case VERTEX:
                     if (content[cursor] == '\n')

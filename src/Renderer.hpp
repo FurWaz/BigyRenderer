@@ -8,6 +8,7 @@
 #include "Material.hpp"
 #include "Vec2.hpp"
 #include "Light.hpp"
+#include "Scene.hpp"
 
 Vec3f barycentric(Vec2i p1, Vec2i p2, Vec2i p3, Vec2i p)
 {
@@ -174,6 +175,7 @@ namespace Renderer
 
                         Color texColor = texDiffuse.getPixel(imCoordDiffuse.x, imCoordDiffuse.y);
                         Color finalColor(0, 0, 0);
+                        finalColor += texColor * 0.5f; // like ambient light at 50%
 
                         // get light intensity
                         for (Light* light : lights)
@@ -227,5 +229,13 @@ namespace Renderer
                 }
             }
         }
+    }
+
+    void RenderScene(Image& im, const Camera& cam, const Scene& scene)
+    {
+        const std::vector<Light*>& lights = scene.getLights();
+        for (auto &&model : scene.getModels())
+            RenderModel(im, cam, *model, lights);
+        RenderLights(im, cam, lights);
     }
 }

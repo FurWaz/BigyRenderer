@@ -7,9 +7,7 @@
 #include "Image.hpp"
 #include "Renderer.hpp"
 #include "ModelLoader.hpp"
-#include "Vec3.hpp"
-#include "Camera.hpp"
-#include "Light.hpp"
+#include "SceneLoader.hpp"
 
 bool loop = true;
 
@@ -28,41 +26,35 @@ int main(int argc, char const *argv[])
         return 1;
     }
 
-    std::string path_model = argv[1];
-    Model model = ModelLoader::FromFolder(path_model);
-    if (!model.valid())
+    std::string path_scene = argv[1];
+    std::cout << "Loading scene from [" << path_scene << "] ..." << std::endl;
+    Scene scene = SceneLoader::FromFile(path_scene);
+    if (scene.empty())
     {
-        std::cerr << "Error: invalid model!" << std::endl;
-        return 1;
+        std::cerr << "Error : loaded scene is empty !" << std::endl;
+        exit(1);
     }
+    std::cout << "Scene loaded successfully !" << std::endl;
     
     Image image(500, 800);
     Camera camera(Vec3f(0, 0.3f, 1.5f), Quaternion::Euler(-0.2f, 0, 0));
-
-    std::vector<Light*> lights;
-    Light* whiteLight = new Light(Vec3f(0, 0, 0), Color::WHITE, 2, 2.0f);
-    Light* redLight = new Light(Vec3f(0, 0, 0), Color::RED, 1, 0.5f);
-    Light* greenLight = new Light(Vec3f(0, 0, 0), Color::GREEN, 1, 0.5f);
-    lights.push_back(whiteLight);
-    lights.push_back(redLight);
-    lights.push_back(greenLight);
+    float radius = 2.f;
 
     float rot = 0;
     while (loop)
     {
         rot += 0.1f;
-        float whiteRadius = 0.7f;
-        float redRadius = 0.2f;
-        whiteLight->position = Vec3f(cos(rot) * whiteRadius, 0,  sin(rot) * whiteRadius);
-        redLight->position = Vec3f(  cos(rot*1.3f) * redRadius,  sin(rot*1.3f) * redRadius, 0.1f);
-        greenLight->position = Vec3f(-cos(rot*1.3f) * redRadius, -sin(rot*1.3f) * redRadius, 0.1f);
-        model.mesh.rotation = Quaternion::Euler(0, rot * 0.7f, 0);
+        camera.position = Vec3f(
+            cos(rot) * radius,
+            0.2f + sin(1.3f * rot) * 0.5f,
+            sin(rot) * radius
+        );
+        camera.lookAt(Vec3f(0.f, 0.2f, 0.f));
 
         image.clear(Color::BLACK);
-        Renderer::RenderLights(image, camera, lights);
-        Renderer::RenderModel(image, camera, model, lights);
+        Renderer::RenderScene(image, camera, scene);
         image.save("./output.png");
-        // image.saveDepth("./depth.png");
+        image.saveDepth("./depth.png");
     }
 
     return 0;

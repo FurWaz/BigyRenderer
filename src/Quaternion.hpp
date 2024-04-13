@@ -5,6 +5,7 @@ class Quaternion
 {
 public:
     static Quaternion Euler(float x, float y, float z);
+    static Quaternion Euler(Vec3f vec);
 
     float x, y, z, w;
 

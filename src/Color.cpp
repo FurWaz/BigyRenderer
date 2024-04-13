@@ -1,4 +1,5 @@
 #include <iostream>
+#include <string>
 #include <algorithm>
 #include "Color.hpp"
 
@@ -34,6 +35,19 @@ Color::Color()
     : r(0), g(0), b(0), a(255)
 {
 
+}
+
+Color::Color(std::string str)
+{
+    size_t start = 0;
+    size_t end = str.find(",");
+    this->r = std::stoi(str.substr(start, end-start));
+    start = end;
+    end = str.find(",", start+1);
+    this->g = std::stoi(str.substr(start+1, end-start));
+    start = end;
+    end = str.length()-1;
+    this->b = std::stoi(str.substr(start+1, end-start));
 }
 
 Color::Color(unsigned char r, unsigned char g, unsigned char b, unsigned char a)

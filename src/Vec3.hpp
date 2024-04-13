@@ -9,6 +9,7 @@ public:
 
     Vec3();
     Vec3(T x, T y, T z);
+    Vec3(std::string);
     Vec3(const Vec3 &other);
     ~Vec3();
 
@@ -34,10 +35,25 @@ public:
     }
 };
 
+// TODO : make constructor from string
+
 typedef Vec3<int> Vec3i;
 typedef Vec3<float> Vec3f;
 typedef Vec3<double> Vec3d;
 
+template<typename T>
+Vec3<T>::Vec3(std::string str)
+{
+    size_t start = 0;
+    size_t end = str.find(",");
+    this->x = std::stof(str.substr(start, end-start));
+    start = end;
+    end = str.find(",", start+1);
+    this->y = std::stof(str.substr(start+1, end-start));
+    start = end;
+    end = str.length()-1;
+    this->z = std::stof(str.substr(start+1, end-start));
+}
 
 template <typename T>
 Vec3<T> Vec3<T>::cross(const Vec3 &other) const

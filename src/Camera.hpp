@@ -8,4 +8,6 @@ public:
     Camera(const Vec3f &position, const Quaternion &rotation);
     Camera(const Camera &other);
     ~Camera();
+
+    void lookAt(Vec3f target);
 };

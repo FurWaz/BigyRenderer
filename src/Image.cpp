@@ -73,11 +73,11 @@ void Image::saveDepth(std::string path)
     for (int i = 0; i < width * height; i++)
     {
         float depth = this->depth[i];
-        if (depth <= 0 || depth >= 2)
+        if (depth <= 0 || depth >= 4)
             Color(0, 0, 0, 255).toArray(data, i * 4);
         else
         {
-            unsigned char c = (unsigned char) (int) (depth * 128);
+            unsigned char c = (unsigned char) (int) (depth * 64);
             Color(c, c, c, 255).toArray(data, i * 4);
         }
     }

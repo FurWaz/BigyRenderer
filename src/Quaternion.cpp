@@ -18,6 +18,11 @@ Quaternion Quaternion::Euler(float x, float y, float z)
     );
 }
 
+Quaternion Quaternion::Euler(Vec3f vec)
+{
+    return Euler(vec.x, vec.y, vec.z);
+}
+
 Quaternion::Quaternion()
     : x(0), y(0), z(0), w(1) {}
 

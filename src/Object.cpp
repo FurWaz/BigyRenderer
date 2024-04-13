@@ -12,7 +12,10 @@ Object::~Object() {}
 
 Vec3f Object::forward() const
 {
-    // NOTE : not returning rotation * Vec3f(0, 0, 1)
-    // because the camera rotation's conjugate should be applied to the object
     return Vec3f(0, 0, 1);
+}
+
+Vec3f Object::right() const
+{
+    return Vec3f(1, 0, 0);
 }
