@@ -6,9 +6,11 @@
 #include "Model.hpp"
 #include "MeshLoader.hpp"
 
+#define fail(x) { std::cerr << x << std::endl; return new Model(); }
+
 namespace ModelLoader
 {
-    Model FromFolder(std::string folderPath)
+    Model* FromFolder(std::string folderPath)
     {
         auto folders = std::filesystem::directory_iterator(folderPath);
         std::map<std::string, std::string> files;
@@ -26,10 +28,7 @@ namespace ModelLoader
         for (const std::string& name : required)
         {
             if (files.find(name) == files.end())
-            {
-                std::cerr << "Error: Missing " << name << " file" << std::endl;
-                return Model(); // invalid model to indicate failure
-            }
+                fail("Error: Missing " << name << " file");
         }
 
         std::string meshPath = files["mesh"];
@@ -39,34 +38,22 @@ namespace ModelLoader
 
         Mesh mesh = MeshLoader::FromFile(meshPath);
         if (!mesh.valid())
-        {
-            std::cerr << "Error: Invalid mesh" << std::endl;
-            return Model(); // invalid model to indicate failure
-        }
+            fail("Error: Invalid mesh");
 
         Image diffuse(diffusePath, true);
         if (!diffuse.valid())
-        {
-            std::cerr << "Error: Invalid diffuse image" << std::endl;
-            return Model(); // invalid model to indicate failure
-        }
+            fail("Error: Invalid diffuse image");
 
         Image normal(normalPath, true);
         if (!normal.valid())
-        {
-            std::cerr << "Error: Invalid normal image" << std::endl;
-            return Model(); // invalid model to indicate failure
-        }
+            fail("Error: Invalid normal image");
 
         Image specular(specularPath, true);
         if (!specular.valid())
-        {
-            std::cerr << "Error: Invalid specular image" << std::endl;
-            return Model(); // invalid model to indicate failure
-        }
+            fail("Error: Invalid specular image");
         
         Material material(diffuse, normal, specular);
 
-        return Model(mesh, material);
+        return new Model(mesh, material);
     }
 }

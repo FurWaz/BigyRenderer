@@ -2,7 +2,7 @@
 
 Object::Object() : position(), rotation() {}
 
-Object::Object(const Vec3f &position, const Quaternion &rotation)
+Object::Object(Vec3f position, Quaternion rotation)
     : position(position), rotation(rotation) {}
 
 Object::Object(const Object &other)

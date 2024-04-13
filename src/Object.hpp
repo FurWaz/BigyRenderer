@@ -12,7 +12,7 @@ public:
     Vec3f right() const;
 
     Object();
-    Object(const Vec3f &position, const Quaternion &rotation);
+    Object(Vec3f position, Quaternion rotation);
     Object(const Object &other);
     ~Object();
 };

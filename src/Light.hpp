@@ -1,26 +1,32 @@
 #pragma once
 #include "Vec3.hpp"
+#include "Color.hpp"
+#include "Object.hpp"
 
-class Light
+class Light : public Object
 {
+protected:
+    Light();
+    Light(Vec3f pos, Quaternion rot, Color c, float intensity);
+
 public:
-    Vec3f position;
     Color color;
     float intensity;
-    float range;
+    
+    virtual ~Light();
 
-    Light();
-    Light(Vec3f pos, Color c, float intensity, float range);
-    ~Light();
+    virtual float getIntensity(Vec3f point, Vec3f normal) const = NULL;
+    const Color& getColor() const;
 };
 
-Light::Light(): position(Vec3f(0, 0, 0)), color(Color::WHITE), intensity(1), range(1)
+Light::Light()
+    : Object(), color(Color::WHITE), intensity(1.0)
 {
 
 }
 
-Light::Light(Vec3f pos, Color c, float intensity, float range)
-    : position(pos), color(c), intensity(intensity), range(range)
+Light::Light(Vec3f pos, Quaternion rot, Color c, float intensity)
+    : Object(pos, rot), color(c), intensity(intensity)
 {
 
 }
@@ -28,4 +34,9 @@ Light::Light(Vec3f pos, Color c, float intensity, float range)
 Light::~Light()
 {
 
+}
+
+const Color& Light::getColor() const
+{
+    return color;
 }

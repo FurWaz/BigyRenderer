@@ -2,6 +2,7 @@
 #include "Scene.hpp"
 #include "FileLoader.hpp"
 #include "ModelLoader.hpp"
+#include "PointLight.hpp"
 #include <iostream>
 
 namespace SceneLoader
@@ -69,17 +70,17 @@ namespace SceneLoader
                     subParseStart = dataChunk[0] == ' ';
                     subParseEnd = dataChunk.find(' ', subParseStart);
                     std::string modelPath = dataChunk.substr(subParseStart, subParseEnd-subParseStart);
-                    Model m = ModelLoader::FromFolder(modelPath);
-                    if (m.valid())
+                    Model* m = ModelLoader::FromFolder(modelPath);
+                    if (m->valid())
                     {
                         subParseStart = subParseEnd+1;
                         subParseEnd = dataChunk.find(' ', subParseStart);
                         std::string modelPosition = dataChunk.substr(subParseStart, subParseEnd-subParseStart);
-                        m.mesh.position = Vec3f(modelPosition);
+                        m->mesh.position = Vec3f(modelPosition);
                         subParseStart = subParseEnd+1;
                         subParseEnd = dataChunk.find(' ', subParseStart);
                         std::string modelRotation = dataChunk.substr(subParseStart, subParseEnd-subParseStart);
-                        m.mesh.rotation = Quaternion::Euler(Vec3f(modelRotation));
+                        m->mesh.rotation = Quaternion::Euler(Vec3f(modelRotation));
                         scene.addModel(m);
                     }
                     type = LineType::UNKNOWN;
@@ -99,14 +100,24 @@ namespace SceneLoader
                     Color col(dataChunk.substr(subParseStart, subParseEnd-subParseStart));
                     subParseStart = subParseEnd+1;
                     subParseEnd = dataChunk.find(' ', subParseStart);
+                    float intensity(std::stof(dataChunk.substr(subParseStart, subParseEnd-subParseStart)));
+                    subParseStart = subParseEnd+1;
+                    subParseEnd = dataChunk.find(' ', subParseStart);
+                    float range(std::stof(dataChunk.substr(subParseStart, subParseEnd-subParseStart)));
+                    subParseStart = subParseEnd+1;
+                    subParseEnd = dataChunk.find(' ', subParseStart);
+                    float angle(std::stof(dataChunk.substr(subParseStart, subParseEnd-subParseStart)));
+                    subParseStart = subParseEnd+1;
+                    subParseEnd = dataChunk.find(' ', subParseStart);
                     Vec3f pos(dataChunk.substr(subParseStart, subParseEnd-subParseStart));
                     subParseStart = subParseEnd+1;
                     subParseEnd = lightType == 's' ? dataChunk.find(' ', subParseStart) : dataChunk.length()-1;
                     Vec3f rot(dataChunk.substr(subParseStart, subParseEnd-subParseStart));
+                    Quaternion quatRot = Quaternion::Euler(rot);
                     switch(lightType)
                     {
                         case 'p': // point
-                            scene.addLight(Light(pos, col, 2.0f, 1.0f));
+                            scene.addLight(new PointLight(pos, quatRot, col, intensity, range));
                             break;
                     }
                     type = LineType::UNKNOWN;

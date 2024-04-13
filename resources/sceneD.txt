@@ -1,8 +1,6 @@
 # M = model : path / position / rotation
 M C:\Users\furwa\Desktop\FAC\BigyRenderer\resources\diablo 0,0,0 0,0,0
 
-# L = light : type / color / position / rotation [/ cone angle (if spot)]
+# L = light : type / color / intensity / range / cone_angle (spot only) / position / rotation
 # light types : [p]oint / [d]irectional / [s]pot
-L p 255,255,255 0,0,0.3 0,0,0
-
-# TODO : add intensity and range to lights
+L p 255,255,255 1.0 1.0 0.0 0,0,0.3 0,0,0

@@ -13,14 +13,14 @@ public:
     Scene() {}
     ~Scene() {}
 
-    void addModel(Model model)
+    void addModel(Model* model)
     {
-        models.push_back(new Model(model));
+        models.push_back(model);
     }
 
-    void addLight(Light light)
+    void addLight(Light* light)
     {
-        lights.push_back(new Light(light));
+        lights.push_back(light);
     }
 
     bool empty()

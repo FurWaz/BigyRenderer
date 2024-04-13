@@ -73,9 +73,10 @@ namespace Renderer
         const Mesh& mesh = model.mesh;
 
         // calculate projected vertices
-        Vec2i* projected = new Vec2i[mesh.n_vertices];
         Vec3f* verts = new Vec3f[mesh.n_vertices];
         Vec3f* norms = new Vec3f[mesh.n_normals];
+        Vec2i* projected = new Vec2i[mesh.n_vertices];
+        Vec3f* vertsCamera = new Vec3f[mesh.n_vertices];
 
         for (size_t i = 0; i < mesh.n_vertices; i++)
         {
@@ -84,10 +85,9 @@ namespace Renderer
             norms[i] = mesh.rotation * mesh.normals[i];
 
             // apply camera transformation
-            verts[i] = antiCamRot * (verts[i] - cam.position);
-            norms[i] = antiCamRot * norms[i];
+            vertsCamera[i] = antiCamRot * (verts[i] - cam.position);
 
-            projected[i] = CameraToScreen(im, verts[i]);
+            projected[i] = CameraToScreen(im, vertsCamera[i]);
         }
 
         // render triangles (filling the depth buffer too)
@@ -121,9 +121,9 @@ namespace Renderer
                     Vec3f bary = barycentric(p1, p2, p3, p);
                     if (bary.x < 0 || bary.y < 0 || bary.z < 0) continue;
 
-                    float pixelDepth = bary.x * verts[tri.ver_i[0]].z +
-                        bary.y * verts[tri.ver_i[1]].z +
-                        bary.z * verts[tri.ver_i[2]].z;
+                    float pixelDepth = bary.x * vertsCamera[tri.ver_i[0]].z +
+                        bary.y * vertsCamera[tri.ver_i[1]].z +
+                        bary.z * vertsCamera[tri.ver_i[2]].z;
                     pixelDepth = -pixelDepth;
 
                     if (pixelDepth < 0) continue;
@@ -163,7 +163,7 @@ namespace Renderer
                             (normalColor.g - 128) / 128.f,
                             (normalColor.b - 128) / 128.f
                         );
-                        normal = (normal + antiCamRot * mapNormal).normalize();
+                        normal = (normal + mapNormal).normalize();
 
                         // get specular map
                         const Image& texSpecular = model.material.specular;
@@ -175,19 +175,11 @@ namespace Renderer
 
                         Color texColor = texDiffuse.getPixel(imCoordDiffuse.x, imCoordDiffuse.y);
                         Color finalColor(0, 0, 0);
-                        finalColor += texColor * 0.5f; // like ambient light at 50%
+                        finalColor += texColor * 0.1f; // like ambient light at 10%
 
                         // get light intensity
                         for (Light* light : lights)
-                        {
-                            Vec3f lightCamPos = antiCamRot * (light->position - cam.position);
-                            Vec3f shift = (lightCamPos - position);
-                            Vec3f lightDir = shift.normalize();
-                            float dist = shift.length();
-                            float angle = std::max(0.0f, pow(normal.dot(lightDir), specularColor * 32.f + 1.f));
-                            float range = std::clamp(1 - (dist / light->range), 0.0f, 1.0f);
-                            finalColor += texColor * light->color * angle * range * light->intensity;
-                        }
+                            finalColor += texColor * light->getColor() * light->getIntensity(position, normal);
 
                         im.setDepth(x, y, pixelDepth);
                         im.setPixel(x, y, finalColor);
