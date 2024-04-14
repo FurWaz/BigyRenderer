@@ -34,6 +34,8 @@ public:
             {
                 verts[i] = (mesh.rotation * mesh.vertices[i]) + mesh.position;
                 verts[i] = antiRot * (verts[i] - position);
+                // TODO : change Renderer::ProjectPoint to own overriden method
+                //        to permit point, spot, and direction lights (360deg, for example)
                 projected[i] = Renderer::ProjectPoint(shadowMapSize, shadowMapSize, verts[i]);
             }
 
