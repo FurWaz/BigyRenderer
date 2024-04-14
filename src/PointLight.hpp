@@ -98,7 +98,7 @@ public:
                 return 0.f; // not in light cone
 
             float shadowDepth = shadowMap[coords.x + coords.y * shadowMapSize];
-            float bias = 0.1f; // margin to avoid stairs effect for horizontal surfaces
+            float bias = 0.01f; // margin to avoid stairs effect for horizontal surfaces
             if (-local.z > shadowDepth + bias) return 0.f; // in the shadows (behind triangle)
         }
 
@@ -110,6 +110,6 @@ public:
         float range = 1.f - (distance / this->range);
         if (range < 0.f) range = 0.f;
         if (range > 1.f) range = 1.f;
-        return angle * intensity;
+        return angle * intensity * range;
     }
 };

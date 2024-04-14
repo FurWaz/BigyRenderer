@@ -111,8 +111,8 @@ namespace Renderer
                 std::max(std::max(p1.y, p2.y), p3.y)
             );
 
-            bool outOfImage = !im.pixelCheck(b1.x, b1.y) && !im.pixelCheck(b2.x, b2.y);
-            if (outOfImage) continue;
+            // bool outOfImage = !im.pixelCheck(b1.x, b1.y) && !im.pixelCheck(b2.x, b2.y);
+            // if (outOfImage) continue;
 
             for (int x = b1.x; x < b2.x; x++)
             {

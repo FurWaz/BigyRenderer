@@ -36,7 +36,7 @@ int main(int argc, char const *argv[])
     }
     std::cout << "Scene loaded successfully !" << std::endl;
     
-    Image image(500, 800);
+    Image image(400, 700);
     Camera camera(Vec3f(0, 0.3f, 1.5f), Quaternion::Euler(-0.2f, 0, 0));
     float radius = 2.f;
 
