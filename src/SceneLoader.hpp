@@ -129,6 +129,7 @@ namespace SceneLoader
             cursor++;
         }
 
+        delete[] content;
         return scene;
     }
 };

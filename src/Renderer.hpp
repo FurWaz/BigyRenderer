@@ -39,7 +39,7 @@ namespace Renderer
     void DisplayPoint(Image& im, Vec2i p, Color c)
     {
         if (im.pixelCheck(p.x, p.y))
-            im.setPixel(p.x, p.y, im.getPixel(p.x, p.y).hover(c));
+            im.setPixel(p.x, p.y, c);
     }
 
     void DisplayLine(Image &im, Vec2i p1, Vec2i p2, const Color &color)
@@ -67,7 +67,7 @@ namespace Renderer
         }
     }
 
-    void RenderModel(Image& im, const Camera& cam, const Model& model, std::vector<Light*> lights)
+    void RenderModel(Image& im, const Camera& cam, const Model& model, const std::vector<Light*>& lights)
     {
         Quaternion antiCamRot = cam.rotation.conjugate();
         const Mesh& mesh = model.mesh;
@@ -78,16 +78,19 @@ namespace Renderer
         Vec2i* projected = new Vec2i[mesh.n_vertices];
         Vec3f* vertsCamera = new Vec3f[mesh.n_vertices];
 
-        for (size_t i = 0; i < mesh.n_vertices; i++)
+        for (size_t i = 0; i < mesh.n_vertices; i++) // vertex transformation
         {
             // apply mesh rotation + translation
             verts[i] = (mesh.rotation * mesh.vertices[i]) + mesh.position;
-            norms[i] = mesh.rotation * mesh.normals[i];
-
             // apply camera transformation
             vertsCamera[i] = antiCamRot * (verts[i] - cam.position);
-
+            // project to screen
             projected[i] = CameraToScreen(im, vertsCamera[i]);
+        }
+        for (size_t i = 0; i < mesh.n_normals; i++) // normal transformation
+        {
+            // apply mesh rotation
+            norms[i] = mesh.rotation * mesh.normals[i];
         }
 
         // render triangles (filling the depth buffer too)
@@ -147,17 +150,17 @@ namespace Renderer
                         // get texture color
                         const Image& texDiffuse = model.material.diffuse;
                         Vec2i imCoordDiffuse = Vec2i(
-                            (int) (texCoord.x * texDiffuse.width),
-                            (int) ((1.f-texCoord.y) * texDiffuse.height)
+                            (int) (texCoord.x * (texDiffuse.width-1)),
+                            (int) ((1.f-texCoord.y) * (texDiffuse.height-1))
                         );
 
                         // add normal map
                         const Image& texNormal = model.material.normal;
                         Vec2i imCoordNormal = Vec2i(
-                            (int) (texCoord.x * texNormal.width),
-                            (int) ((1.f-texCoord.y) * texNormal.height)
+                            (int) (texCoord.x * (texNormal.width-1)),
+                            (int) ((1.f-texCoord.y) * (texNormal.height-1))
                         );
-                        Color normalColor = texNormal.getPixel(imCoordNormal.x, imCoordNormal.y);
+                        const Color& normalColor = texNormal.getPixel(imCoordNormal.x, imCoordNormal.y);
                         Vec3f mapNormal(
                             (normalColor.r - 128) / 128.f,
                             (normalColor.g - 128) / 128.f,
@@ -168,12 +171,12 @@ namespace Renderer
                         // get specular map
                         const Image& texSpecular = model.material.specular;
                         Vec2i imCoordSpecular = Vec2i(
-                            (int) (texCoord.x * texSpecular.width),
-                            (int) ((1.f-texCoord.y) * texSpecular.height)
+                            (int) (texCoord.x * (texSpecular.width-1)),
+                            (int) ((1.f-texCoord.y) * (texSpecular.height-1))
                         );
                         float specularColor = texSpecular.getPixel(imCoordSpecular.x, imCoordSpecular.y).r / 255.f;
 
-                        Color texColor = texDiffuse.getPixel(imCoordDiffuse.x, imCoordDiffuse.y);
+                        const Color& texColor = texDiffuse.getPixel(imCoordDiffuse.x, imCoordDiffuse.y);
                         Color finalColor(0, 0, 0);
                         finalColor += texColor * 0.1f; // like ambient light at 10%
 
@@ -191,10 +194,11 @@ namespace Renderer
         // free memory
         delete[] projected;
         delete[] verts;
+        delete[] vertsCamera;
         delete[] norms;
     }
 
-    void RenderLights(Image& im, const Camera& cam, std::vector<Light*> lights)
+    void RenderLights(Image& im, const Camera& cam, const std::vector<Light*>& lights)
     {
         Quaternion antiCamRot = cam.rotation.conjugate();
         float lightRadius = 4.f;
@@ -226,7 +230,7 @@ namespace Renderer
     void RenderScene(Image& im, const Camera& cam, const Scene& scene)
     {
         const std::vector<Light*>& lights = scene.getLights();
-        for (auto &&model : scene.getModels())
+        for (Model* model : scene.getModels())
             RenderModel(im, cam, *model, lights);
         RenderLights(im, cam, lights);
     }

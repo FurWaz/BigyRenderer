@@ -1,5 +1,6 @@
 #pragma once
 #include <iostream>
+#include "math.h"
 
 template <typename T>
 class Vec3

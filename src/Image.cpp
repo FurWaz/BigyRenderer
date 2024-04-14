@@ -39,7 +39,7 @@ Image::~Image()
     if (depth) delete[] depth;
 }
 
-const bool Image::valid() const
+bool Image::valid() const
 {
     return width > 0 && height > 0;
 }
@@ -56,8 +56,9 @@ void Image::save(std::string path)
     unsigned char* data = new unsigned char[width * height * 4];
     for (int i = 0; i < width * height; i++)
         this->data[i].toArray(data, i * 4);
-
+    
     stbi_write_png(path.c_str(), width, height, 4, data, width * 4);
+    delete[] data;
 }
 
 void Image::saveDepth(std::string path)
@@ -83,6 +84,7 @@ void Image::saveDepth(std::string path)
     }
 
     stbi_write_png(path.c_str(), width, height, 4, data, width * 4);
+    delete[] data;
 }
 
 void Image::load(std::string path)
@@ -99,6 +101,9 @@ void Image::load(std::string path)
 
     if (data)
     {
+        if (this->data) delete[] data;
+        if (this->depth) delete[] depth;
+
         this->data = new Color[width * height];
         this->depth = new float[width * height];
         for (int i = 0; i < width * height; i++)
@@ -121,7 +126,10 @@ void Image::clear(const Color &color)
 {
     for (int i = 0; i < width * height; i++)
     {
-        data[i] = Color(color);
+        data[i].r = color.r;
+        data[i].g = color.g;
+        data[i].b = color.b;
+        data[i].a = color.a;
         depth[i] = std::numeric_limits<float>::infinity();
     }
 }
@@ -131,22 +139,28 @@ bool Image::pixelCheck(int x, int y) const
     return x >= 0 && x < width && y >= 0 && y < height;
 }
 
-Color Image::getPixel(int x, int y) const
+const Color& Image::getPixel(int x, int y) const
 {
+    if (!pixelCheck(x, y))
+        return Color::BLACK;
     return data[x + y * width];
 }
 
 void Image::setPixel(int x, int y, const Color &color)
 {
+    if (!pixelCheck(x, y)) return;
     data[x + y * width] = Color(color);
 }
 
 float Image::getDepth(int x, int y) const
 {
+    if (!pixelCheck(x, y))
+        return std::numeric_limits<float>::infinity();
     return depth[x + y * width];
 }
 
 void Image::setDepth(int x, int y, float depth)
 {
+    if (!pixelCheck(x, y)) return;
     this->depth[x + y * width] = depth;
 }

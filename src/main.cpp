@@ -54,7 +54,6 @@ int main(int argc, char const *argv[])
         image.clear(Color::BLACK);
         Renderer::RenderScene(image, camera, scene);
         image.save("./output.png");
-        image.saveDepth("./depth.png");
     }
 
     return 0;

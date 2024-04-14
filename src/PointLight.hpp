@@ -3,18 +3,6 @@
 
 class PointLight : public Light
 {
-private:
-    float clamp(float val, float min, float max) const
-    {
-        return val > max ? max : val < min ? min : val;
-    }
-
-    float max(float v1, float v2) const
-    {
-        return v1 > v2 ? v1 : v2;
-    }
-
-
 protected:
     float range;
 
@@ -30,8 +18,11 @@ public:
         Vec3f shift = position - point;
         Vec3f lightDir = shift.normalize();
         float distance = shift.length();
-        float angle = max(lightDir.dot(normal), 0.0f);
-        float range = clamp(1.f - (distance / this->range), 0.0f, 1.0f);
+        float angle = lightDir.dot(normal);
+        if (angle < 0.f) angle = 0.f;
+        float range = 1.f - (distance / this->range);
+        if (range < 0.f) range = 0.f;
+        if (range > 1.f) range = 1.f;
         return angle * intensity;
     }
 };

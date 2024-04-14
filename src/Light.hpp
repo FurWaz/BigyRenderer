@@ -15,7 +15,7 @@ public:
     
     virtual ~Light();
 
-    virtual float getIntensity(Vec3f point, Vec3f normal) const = NULL;
+    virtual float getIntensity(Vec3f point, Vec3f normal) const = 0;
     const Color& getColor() const;
 };
 

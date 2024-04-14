@@ -3,11 +3,11 @@
 
 Material::Material()
 {
-
+    
 }
 
 Material::Material(Image diffuse, Image normal, Image specular)
-    : diffuse(Image(diffuse)), normal(Image(normal)), specular(Image(specular))
+    : diffuse(diffuse), normal(normal), specular(specular)
 {
 
 }
@@ -17,7 +17,7 @@ Material::~Material()
 
 }
 
-const bool Material::valid() const
+bool Material::valid() const
 {
     return diffuse.valid() && normal.valid() && specular.valid();
 }

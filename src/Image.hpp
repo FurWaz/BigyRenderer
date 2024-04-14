@@ -18,7 +18,7 @@ public:
     Image(const Image &other);
     ~Image();
 
-    const bool valid() const;
+    bool valid() const;
 
     void save(std::string path = "");
     void saveDepth(std::string path = "");
@@ -27,7 +27,7 @@ public:
 
     bool pixelCheck(int x, int y) const;
 
-    Color getPixel(int x, int y) const;
+    const Color& getPixel(int x, int y) const;
     void setPixel(int x, int y, const Color &color);
 
     float getDepth(int x, int y) const;

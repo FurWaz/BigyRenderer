@@ -183,16 +183,12 @@ namespace MeshLoader
         for (size_t i = 0; i < trianglesCount; i++)
             trianglesArr[i] = triangles[i];
 
+        delete[] content;
         return Mesh(
             verticesArr, verticesCount,
             texturesArr, texturesCount,
             normalsArr, normalsCount,
             trianglesArr, trianglesCount
         );
-
-        delete[] verticesArr;
-        delete[] texturesArr;
-        delete[] normalsArr;
-        delete[] trianglesArr;
     }
 }

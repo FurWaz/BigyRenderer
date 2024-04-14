@@ -10,19 +10,12 @@ Mesh::Mesh():
 }
 
 Mesh::Mesh(Vec3f* vertices, size_t n_vertices, Vec2f* textures, size_t n_textures, Vec3f* normals, size_t n_normals, Triangle* triangles, size_t n_triangles)
-    : vertices(new Vec3f[n_vertices]), n_vertices(n_vertices),
-      textures(new Vec2f[n_textures]), n_textures(n_textures),
-      normals(new Vec3f[n_normals]),   n_normals(n_normals),
-      triangles(new Triangle[n_triangles]), n_triangles(n_triangles)
+    : vertices(vertices), n_vertices(n_vertices),
+      textures(textures), n_textures(n_textures),
+      normals(normals),   n_normals(n_normals),
+      triangles(triangles), n_triangles(n_triangles)
 {
-    for (size_t i = 0; i < n_vertices; i++)
-        this->vertices[i] = Vec3f(vertices[i]);
-    for (size_t i = 0; i < n_textures; i++)
-        this->textures[i] = Vec2f(textures[i]);
-    for (size_t i = 0; i < n_normals; i++)
-        this->normals[i] = Vec3f(normals[i]);
-    for (size_t i = 0; i < n_triangles; i++)
-        this->triangles[i] = Triangle(triangles[i]);
+    
 }
 
 Mesh::Mesh(const Mesh &other)

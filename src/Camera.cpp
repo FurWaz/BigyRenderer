@@ -1,4 +1,5 @@
 #include "Camera.hpp"
+#include "math.h"
 
 Camera::Camera() : Object() {}
 

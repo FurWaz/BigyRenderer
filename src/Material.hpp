@@ -12,5 +12,5 @@ public:
     Material(Image diffuse, Image normal, Image specular);
     ~Material();
 
-    const bool valid() const;
+    bool valid() const;
 };

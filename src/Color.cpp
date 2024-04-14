@@ -48,6 +48,7 @@ Color::Color(std::string str)
     start = end;
     end = str.length()-1;
     this->b = std::stoi(str.substr(start+1, end-start));
+    this->a = 255;
 }
 
 Color::Color(unsigned char r, unsigned char g, unsigned char b, unsigned char a)
@@ -67,7 +68,7 @@ Color::~Color()
 
 }
 
-Color Color::operator*(const Color& other)
+Color Color::operator*(const Color& other) const
 {
     return Color(
         (unsigned char) ((float) r * other.r / 255.0f),
@@ -87,7 +88,7 @@ Color Color::operator+=(const Color& other)
     return *this;
 }
 
-Color Color::operator*(float scalar)
+Color Color::operator*(float scalar) const
 {
     return Color(
         (unsigned char) (std::min((float) r * scalar, 255.0f)),
@@ -97,7 +98,7 @@ Color Color::operator*(float scalar)
     );
 }
 
-Color Color::operator/(float scalar)
+Color Color::operator/(float scalar) const
 {
     return Color(
         (unsigned char) (r / scalar),
@@ -107,7 +108,7 @@ Color Color::operator/(float scalar)
     );
 }
 
-const Color Color::hover(const Color &other)
+Color Color::hover(const Color &other) const
 {
     float alpha = other.a / 255.0f;
     float inv_alpha = 1.0f - alpha;
@@ -120,7 +121,7 @@ const Color Color::hover(const Color &other)
     );
 }
 
-const Color Color::mix(const Color &other, float ratio)
+Color Color::mix(const Color &other, float ratio) const
 {
     float inv_ratio = 1.0f - ratio;
 
@@ -132,7 +133,7 @@ const Color Color::mix(const Color &other, float ratio)
     );
 }
 
-void Color::toArray(unsigned char *data, int index)
+void Color::toArray(unsigned char *data, int index) const
 {
     data[index + 0] = r;
     data[index + 1] = g;
