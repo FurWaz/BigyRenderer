@@ -10,29 +10,29 @@
 #include "Light.hpp"
 #include "Scene.hpp"
 
-Vec3f barycentric(Vec2i p1, Vec2i p2, Vec2i p3, Vec2i p)
-{
-    Vec3i u = Vec3i(p3.x - p1.x, p2.x - p1.x, p1.x - p.x);
-    Vec3i v = Vec3i(p3.y - p1.y, p2.y - p1.y, p1.y - p.y);
-    Vec3i w = u.cross(v);
-
-    if (std::abs(w.z) < 1) return Vec3f(-1, 1, 1);
-
-    return Vec3f(1.0f - (w.x + w.y) / (float)w.z, w.y / (float)w.z, w.x / (float)w.z);
-}
-
 namespace Renderer
 {
-    Vec2i CameraToScreen(const Image &im, const Vec3f& point)
+    Vec3f barycentric(Vec2i p1, Vec2i p2, Vec2i p3, Vec2i p)
     {
-        float ratio = im.width / (float) im.height;
+        Vec3i u = Vec3i(p3.x - p1.x, p2.x - p1.x, p1.x - p.x);
+        Vec3i v = Vec3i(p3.y - p1.y, p2.y - p1.y, p1.y - p.y);
+        Vec3i w = u.cross(v);
+
+        if (std::abs(w.z) < 1) return Vec3f(-1, 1, 1);
+
+        return Vec3f(1.0f - (w.x + w.y) / (float)w.z, w.y / (float)w.z, w.x / (float)w.z);
+    }
+
+    Vec2i ProjectPoint(int width, int height, const Vec3f& point)
+    {
+        float ratio = width / (float) height;
         Vec2f screen(
             (point.x / ratio) / -point.z,
             point.y / -point.z
         );
         return Vec2i(
-            (int) ((screen.x + 1) * im.width / 2),
-            (int) ((1 - screen.y) * im.height / 2)
+            (int) ((screen.x + 1) * width / 2),
+            (int) ((1 - screen.y) * height / 2)
         );
     }
 
@@ -85,7 +85,7 @@ namespace Renderer
             // apply camera transformation
             vertsCamera[i] = antiCamRot * (verts[i] - cam.position);
             // project to screen
-            projected[i] = CameraToScreen(im, vertsCamera[i]);
+            projected[i] = ProjectPoint(im.width, im.height, vertsCamera[i]);
         }
         for (size_t i = 0; i < mesh.n_normals; i++) // normal transformation
         {
@@ -206,7 +206,7 @@ namespace Renderer
         for (Light* light : lights)
         {
             Vec3f cameraPoint = antiCamRot * (light->position - cam.position);
-            Vec2i p = CameraToScreen(im, cameraPoint);
+            Vec2i p = ProjectPoint(im.width, im.height, cameraPoint);
 
             float radius = 4.f;
             Vec2i min = Vec2i(std::max(0, p.x - (int) radius),        std::max(0, p.y - (int) radius));

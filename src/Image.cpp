@@ -141,26 +141,26 @@ bool Image::pixelCheck(int x, int y) const
 
 const Color& Image::getPixel(int x, int y) const
 {
-    if (!pixelCheck(x, y))
-        return Color::BLACK;
+    // if (!pixelCheck(x, y))
+    //     return Color::BLACK;
     return data[x + y * width];
 }
 
 void Image::setPixel(int x, int y, const Color &color)
 {
-    if (!pixelCheck(x, y)) return;
+    // if (!pixelCheck(x, y)) return;
     data[x + y * width] = Color(color);
 }
 
 float Image::getDepth(int x, int y) const
 {
-    if (!pixelCheck(x, y))
-        return std::numeric_limits<float>::infinity();
+    // if (!pixelCheck(x, y))
+    //     return std::numeric_limits<float>::infinity();
     return depth[x + y * width];
 }
 
 void Image::setDepth(int x, int y, float depth)
 {
-    if (!pixelCheck(x, y)) return;
+    // if (!pixelCheck(x, y)) return;
     this->depth[x + y * width] = depth;
 }

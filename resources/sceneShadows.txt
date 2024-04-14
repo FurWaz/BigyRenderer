@@ -1,0 +1,9 @@
+# M = model : path / position / rotation
+M ../../resources/plane 0,0.7,-0.8 1.57,0,0
+M ../../resources/plane 0,-0.3,-0.8 1.57,0,0
+M ../../resources/diablo 0,0,0 0,0,0
+
+# L = light : type / color / intensity / range / cone_angle (spot only) / position / rotation
+# light types : [p]oint / [d]irectional / [s]pot
+L p 0,0,255 1.0 1.0 0.0 -0.5,1,1 -0.5,0,0
+L p 255,0,0 1.0 1.0 0.0 0.5,1,1 -0.5,0,0

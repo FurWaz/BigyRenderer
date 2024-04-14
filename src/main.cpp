@@ -40,10 +40,14 @@ int main(int argc, char const *argv[])
     Camera camera(Vec3f(0, 0.3f, 1.5f), Quaternion::Euler(-0.2f, 0, 0));
     float radius = 2.f;
 
+    const std::vector<Light *>& lights = scene.getLights();
+    for (int i = 0; i < lights.size(); i++)
+        lights[i]->bakeShadows(scene.getModels(), 256);
+
     float rot = 0;
     while (loop)
     {
-        rot += 0.1f;
+        rot += 0.05f;
         camera.position = Vec3f(
             cos(rot) * radius,
             0.2f + sin(1.3f * rot) * 0.5f,
