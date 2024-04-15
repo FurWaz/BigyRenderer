@@ -9,6 +9,8 @@ private:
     float* depth;
 
 public:
+    static void saveDepth(const std::string& path, int width, int height, float* data);
+
     int width, height;
     std::string path;
     

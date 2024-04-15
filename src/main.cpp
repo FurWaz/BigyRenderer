@@ -43,10 +43,14 @@ int main(int argc, char const *argv[])
     float radius = 2.f;
 
     std::cout << "Baking lights ..." << std::endl;
-    const std::vector<Light *>& lights = scene.getLights();
+    const std::vector<Light*>& lights = scene.getLights();
     for (int i = 0; i < lights.size(); i++)
         lights[i]->bakeShadows(scene.getModels(), 512);
     std::cout << "Done baking !" << std::endl;
+
+    // std::cout << "Saving shadow map ..." << std::endl;
+    // Image::saveDepth("./shadowMap.png", 512, 512, lights[0]->shadowMap);
+    // std::cout << "Saved !" << std::endl;
 
     Color clearColor = lightMode ? Color(250, 250, 250) : Color(40, 44, 52);
 

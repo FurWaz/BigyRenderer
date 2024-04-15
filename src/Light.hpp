@@ -42,7 +42,8 @@ Light::Light(Vec3f pos, Quaternion rot, Color c, float intensity)
 
 Light::~Light()
 {
-
+    if (shadowMap != nullptr)
+        delete[] shadowMap;
 }
 
 void Light::bakeShadows(const std::vector<Model*>& models, int shadowMapSize)
@@ -124,7 +125,7 @@ float Light::getLighting(const Vec3f& point, const Vec3f& normal) const
         Vec2i coords = this->projectPoint(local);
         if (coords.x < 0 || coords.x >= shadowMapSize ||
             coords.y < 0 || coords.y >= shadowMapSize)
-            return 0.f; // not in light cone
+            return 0.f; // not in light view, so in the shadows
 
         float shadowDepth = shadowMap[coords.x + coords.y * shadowMapSize];
         float pointDepth = local.length();

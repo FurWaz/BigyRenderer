@@ -3,6 +3,8 @@
 #include "FileLoader.hpp"
 #include "ModelLoader.hpp"
 #include "PointLight.hpp"
+#include "DirectionLight.hpp"
+#include "SpotLight.hpp"
 #include <iostream>
 
 namespace SceneLoader
@@ -118,6 +120,12 @@ namespace SceneLoader
                     {
                         case 'p': // point
                             scene.addLight(new PointLight(pos, quatRot, col, intensity, range));
+                            break;
+                        case 'd': // direction
+                            scene.addLight(new DirectionLight(pos, quatRot, col, intensity, 2.0f));
+                            break;
+                        case 's': // spot
+                            scene.addLight(new SpotLight(pos, quatRot, col, intensity, range, angle));
                             break;
                     }
                     type = LineType::UNKNOWN;

@@ -6,6 +6,25 @@
 #include "stb/stb_image.h"
 #include "stb/stb_image_write.h"
 
+void Image::saveDepth(const std::string& path, int width, int height, float* data)
+{
+    unsigned char* img = new unsigned char[width * height * 4];
+    for (int i = 0; i < width * height; i++)
+    {
+        float depth = data[i];
+        int value = depth * 64;
+        if (value < 0) value = 0;
+        if (value > 255) value = 255;
+        img[i * 4] = value;
+        img[i * 4 + 1] = value;
+        img[i * 4 + 2] = value;
+        img[i * 4 + 3] = 255;
+    }
+
+    stbi_write_png(path.c_str(), width, height, 4, img, width * 4);
+    delete[] img;
+}
+
 Image::Image(): data(nullptr), width(0), height(0) {}
 
 Image::Image(int width, int height)
