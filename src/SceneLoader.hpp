@@ -127,6 +127,9 @@ namespace SceneLoader
                         case 's': // spot
                             scene.addLight(new SpotLight(pos, quatRot, col, intensity, range, angle));
                             break;
+                        case 'a': // ambient
+                            scene.setAmbientLight(col);
+                            break;
                     }
                     type = LineType::UNKNOWN;
                 }

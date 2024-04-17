@@ -2,6 +2,9 @@
 #include "Vec3.hpp"
 #include "Quaternion.hpp"
 
+#define PI 3.141592f
+#define SEMI_PI 1.570796f
+
 class Object
 {
 public:

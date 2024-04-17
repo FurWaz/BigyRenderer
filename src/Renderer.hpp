@@ -57,7 +57,7 @@ namespace Renderer
         }
     }
 
-    void RenderModel(Image& im, const Camera& cam, const Model& model, float ambientLight, const std::vector<Light*>& lights)
+    void RenderModel(Image& im, const Camera& cam, const Model& model, Color ambientLight, const std::vector<Light*>& lights)
     {
         Quaternion antiCamRot = cam.rotation.conjugate();
         const Mesh& mesh = model.mesh;

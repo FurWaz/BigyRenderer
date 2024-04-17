@@ -25,15 +25,13 @@ public:
     {
         Vec3f local = rotation.conjugate() * (point - position);
         Vec2f screen(
-            atan2(local.z, local.x) / 3.141592f, // between -1 and 1
-            atan2(local.y, sqrt(local.x * local.x + local.z * local.z)) / 3.141592f // between 0 and 1
+            atan2(local.x, -local.z) / PI, // between -1 and 1
+            atan2(local.y, sqrt(local.x * local.x + local.z * local.z)) / PI // between -1 and 1
         );
         Vec2i vec(
             (int) ((screen.x * 0.5f + 0.5f) * shadowMapSize),
             (int) ((screen.y * 0.5f + 0.5f) * shadowMapSize)
         );
-        // TODO : Fix the triangle filling problem by slicing the 360view to a 180view x 2
-        // or maybe a 90view x 6 (cubemap to avoid the poles problem [deformation])
         return vec;
     }
 

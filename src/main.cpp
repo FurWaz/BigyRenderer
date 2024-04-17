@@ -19,7 +19,6 @@ void intHandler(int sig)
 int main(int argc, char const *argv[])
 {
     signal(SIGINT, intHandler);
-    bool lightMode = true;
 
     if (argc < 2)
     {
@@ -35,7 +34,6 @@ int main(int argc, char const *argv[])
         std::cerr << "Error : loaded scene is empty !" << std::endl;
         exit(1);
     }
-    scene.setAmbientLight(lightMode ? 0.6f : 0.1f);
     std::cout << "Scene loaded successfully !" << std::endl;
     
     Image image(400, 700);
@@ -48,16 +46,10 @@ int main(int argc, char const *argv[])
         lights[i]->bakeShadows(scene.getModels(), 512);
     std::cout << "Done baking !" << std::endl;
 
-    // std::cout << "Saving shadow map ..." << std::endl;
-    // Image::saveDepth("./shadowMap.png", 512, 512, lights[0]->shadowMap);
-    // std::cout << "Saved !" << std::endl;
-
-    Color clearColor = lightMode ? Color(250, 250, 250) : Color(40, 44, 52);
-
-    float rot = 0;
+    float rot = 0.f;
     while (loop)
     {
-        rot += 0.05f;
+        rot += 0.03f;
         camera.position = Vec3f(
             cos(rot) * radius,
             0.2f + sin(1.3f * rot) * 0.5f,
@@ -65,7 +57,7 @@ int main(int argc, char const *argv[])
         );
         camera.lookAt(Vec3f(0.f, 0.2f, 0.f));
 
-        image.clear(clearColor);
+        image.clear(scene.getAmbientLight());
         Renderer::RenderScene(image, camera, scene);
         image.save("./output.png");
     }

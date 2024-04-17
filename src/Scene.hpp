@@ -8,7 +8,7 @@ class Scene
 private:
     std::vector<Model*> models;
     std::vector<Light*> lights;
-    float ambientLight;
+    Color ambientLight;
 
 public:
     Scene() {}
@@ -29,12 +29,12 @@ public:
         return (models.size() + lights.size()) == 0;
     }
 
-    void setAmbientLight(float intensity)
+    void setAmbientLight(Color intensity)
     {
         ambientLight = intensity;
     }
 
-    float getAmbientLight() const
+    Color getAmbientLight() const
     {
         return ambientLight;
     }
