@@ -37,7 +37,7 @@ int main(int argc, char const *argv[])
     std::cout << "Scene loaded successfully !" << std::endl;
     
     Image image(400, 700);
-    Camera camera(Vec3f(0, 0.3f, 1.5f), Quaternion::Euler(-0.2f, 0, 0));
+    Camera camera(Vec3f(0.3f, 0.3f, 1.5f), Quaternion::Euler(0, 0, 0));
     float radius = 2.f;
 
     std::cout << "Baking lights ..." << std::endl;
@@ -45,6 +45,10 @@ int main(int argc, char const *argv[])
     for (int i = 0; i < lights.size(); i++)
         lights[i]->bakeShadows(scene.getModels(), 512);
     std::cout << "Done baking !" << std::endl;
+
+    std::cout << "Saving shadow map ..." << std::endl;
+    Image::saveDepth("./shadowMap.png", 512, 512, lights[0]->shadowMap);
+    std::cout << "Saved !" << std::endl;
 
     float rot = 0.f;
     while (loop)

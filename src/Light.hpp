@@ -86,12 +86,6 @@ void Light::bakeShadows(const std::vector<Model*>& models, int shadowMapSize)
                 std::max(std::max(p1.y, p2.y), p3.y)
             );
 
-            bool outOfImage = (b1.x < 0 || b1.x >= shadowMapSize ||
-                                b1.y < 0 || b1.y >= shadowMapSize) &&
-                                (b2.x < 0 || b2.x >= shadowMapSize ||
-                                b2.y < 0 || b2.y >= shadowMapSize);
-            if (outOfImage) continue;
-
             for (int x = b1.x; x < b2.x; x++)
             {
                 for (int y = b1.y; y < b2.y; y++)
@@ -108,7 +102,7 @@ void Light::bakeShadows(const std::vector<Model*>& models, int shadowMapSize)
                         verts[tri.ver_i[2]] * bary.z;
                     float pixelDepth = local.length();
 
-                    if (local.z > 0) continue;
+                    if (pixelDepth < 0) continue;
                     if (pixelDepth < shadowMap[x + y * shadowMapSize])
                         shadowMap[x + y * shadowMapSize] = pixelDepth;
                 }
@@ -129,7 +123,7 @@ float Light::getLighting(const Vec3f& point, const Vec3f& normal) const
 
         float shadowDepth = shadowMap[coords.x + coords.y * shadowMapSize];
         float pointDepth = local.length();
-        float bias = 0.01f; // margin to avoid stairs effect for horizontal surfaces
+        float bias = 0.1f; // margin to avoid stairs effect for horizontal surfaces
         if (pointDepth > shadowDepth + bias) return 0.f; // in the shadows (behind triangle)
     }
     return this->getIntensity(point, normal);

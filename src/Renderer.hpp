@@ -57,6 +57,24 @@ namespace Renderer
         }
     }
 
+    void DisplayCircle(Image& im, Vec2i p, float radius, const Color& color)
+    {
+        Vec2i min = Vec2i(std::max(0, p.x - (int) radius),        std::max(0, p.y - (int) radius));
+        Vec2i max = Vec2i(std::min(im.width, p.x + (int) radius), std::min(im.height, p.y + (int) radius));
+
+        for (int x = min.x; x < max.x; x++)
+        {
+            for (int y = min.y; y < max.y; y++)
+            {
+                Vec2i p2(x, y);
+                if ((p2 - p).length() > radius || !im.pixelCheck(p2.x, p2.y))
+                    continue;
+                
+                DisplayPoint(im, p2, color);
+            }
+        }
+    }
+
     void RenderModel(Image& im, const Camera& cam, const Model& model, Color ambientLight, const std::vector<Light*>& lights)
     {
         Quaternion antiCamRot = cam.rotation.conjugate();
@@ -195,22 +213,13 @@ namespace Renderer
             Vec3f cameraPoint = antiCamRot * (light->position - cam.position);
             Vec2i p = ProjectPoint(im.width, im.height, cameraPoint);
 
-            float radius = 4.f;
-            Vec2i min = Vec2i(std::max(0, p.x - (int) radius),        std::max(0, p.y - (int) radius));
-            Vec2i max = Vec2i(std::min(im.width, p.x + (int) radius), std::min(im.height, p.y + (int) radius));
-
-            for (int x = min.x; x < max.x; x++)
-            {
-                for (int y = min.y; y < max.y; y++)
-                {
-                    Vec2i p2(x, y);
-                    if ((p2 - p).length() > radius || !im.pixelCheck(p2.x, p2.y) || im.getDepth(p2.x, p2.y) < -cameraPoint.z)
-                        continue;
-                    
-                    im.setDepth(p2.x, p2.y, -cameraPoint.z);
-                    im.setPixel(p2.x, p2.y, light->color);
-                }
-            }
+            DisplayCircle(im, p, lightRadius, light->color);
+            DisplayLine(
+                im,
+                p,
+                ProjectPoint(im.width, im.height, antiCamRot * ((light->position + light->forward()/2) - cam.position)),
+                light->color
+            );
         }
     }
 

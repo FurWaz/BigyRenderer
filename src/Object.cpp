@@ -12,10 +12,10 @@ Object::~Object() {}
 
 Vec3f Object::forward() const
 {
-    return Vec3f(0, 0, 1);
+    return rotation * Vec3f(0, 0, -1);
 }
 
 Vec3f Object::right() const
 {
-    return Vec3f(1, 0, 0);
+    return rotation * Vec3f(1, 0, 0);
 }
