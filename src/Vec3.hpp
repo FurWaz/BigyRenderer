@@ -25,6 +25,7 @@ public:
     Vec3 operator-() const { return Vec3(-x, -y, -z); }
     Vec3 operator+=(const Vec3 &other) { return *this = *this + other; }
     Vec3 operator-=(const Vec3 &other) { return *this = *this - other; }
+    Vec3 operator*(const Vec3 &other) const { return Vec3(x * other.x, y * other.y, z * other.z); }
     Vec3 operator*(T scalar) const { return Vec3(x * scalar, y * scalar, z * scalar); }
     Vec3 operator/(T scalar) const { return Vec3(x / scalar, y / scalar, z / scalar); }
     Vec3 operator*=(T scalar) { return *this = *this * scalar; }

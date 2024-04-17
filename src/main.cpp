@@ -43,7 +43,10 @@ int main(int argc, char const *argv[])
     std::cout << "Baking lights ..." << std::endl;
     const std::vector<Light*>& lights = scene.getLights();
     for (int i = 0; i < lights.size(); i++)
+    {
         lights[i]->bakeShadows(scene.getModels(), 512);
+        Image::saveDepth(std::string("./shadowmap_") + std::to_string(i) + ".png", lights[i]->shadowMapSize, lights[i]->shadowMapSize, lights[i]->shadowMap);
+    }
     std::cout << "Done baking !" << std::endl;
 
     float rot = 0.f;

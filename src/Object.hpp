@@ -10,12 +10,13 @@ class Object
 public:
     Vec3f position;
     Quaternion rotation;
+    Vec3f scale;
 
     Vec3f forward() const;
     Vec3f right() const;
 
     Object();
-    Object(Vec3f position, Quaternion rotation);
+    Object(Vec3f position, Quaternion rotation, Vec3f scale);
     Object(const Object &other);
     ~Object();
 };

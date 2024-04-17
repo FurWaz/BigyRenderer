@@ -1,12 +1,12 @@
 #include "Object.hpp"
 
-Object::Object() : position(), rotation() {}
+Object::Object() : position(), rotation(), scale() {}
 
-Object::Object(Vec3f position, Quaternion rotation)
-    : position(position), rotation(rotation) {}
+Object::Object(Vec3f position, Quaternion rotation, Vec3f scale)
+    : position(position), rotation(rotation), scale(scale) {}
 
 Object::Object(const Object &other)
-    : position(other.position), rotation(other.rotation) {}
+    : position(other.position), rotation(other.rotation), scale(other.scale) {}
 
 Object::~Object() {}
 

@@ -4,10 +4,10 @@
 Camera::Camera() : Object() {}
 
 Camera::Camera(const Vec3f &position, const Quaternion &rotation)
-    : Object(position, rotation) {}
+    : Object(position, rotation, Vec3f(1, 1, 1)) {}
 
 Camera::Camera(const Camera &other)
-    : Object(other.position, other.rotation) {}
+    : Object(other.position, other.rotation, Vec3f(1, 1, 1)) {}
 
 Camera::~Camera() {}
 

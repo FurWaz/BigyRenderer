@@ -1,5 +1,5 @@
-# M = model : path / position / rotation
-M ../../resources/eye 0,0,0 0,0,0
+# M = model : path / position / rotation / scale
+M ../../resources/eye 0,0,0 0,0,0 1,1,1
 
 # L = light : type / color / intensity / range / cone_angle (spot only) / position / rotation
 # light types : [p]oint / [d]irectional / [s]pot

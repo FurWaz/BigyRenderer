@@ -83,6 +83,10 @@ namespace SceneLoader
                         subParseEnd = dataChunk.find(' ', subParseStart);
                         std::string modelRotation = dataChunk.substr(subParseStart, subParseEnd-subParseStart);
                         m->mesh.rotation = Quaternion::Euler(Vec3f(modelRotation));
+                        subParseStart = subParseEnd+1;
+                        subParseEnd = dataChunk.find(' ', subParseStart);
+                        std::string modelScale = dataChunk.substr(subParseStart, subParseEnd-subParseStart);
+                        m->mesh.scale = Vec3f(modelScale);
                         scene.addModel(m);
                     }
                     type = LineType::UNKNOWN;

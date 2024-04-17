@@ -89,7 +89,7 @@ namespace Renderer
         for (size_t i = 0; i < mesh.n_vertices; i++) // vertex transformation
         {
             // apply mesh rotation + translation
-            verts[i] = (mesh.rotation * mesh.vertices[i]) + mesh.position;
+            verts[i] = (mesh.rotation * (mesh.vertices[i] * mesh.scale)) + mesh.position;
             // apply camera transformation
             vertsCamera[i] = antiCamRot * (verts[i] - cam.position);
             // project to screen

@@ -34,7 +34,7 @@ Light::Light()
 }
 
 Light::Light(Vec3f pos, Quaternion rot, Color c, float intensity)
-    : Object(pos, rot), color(c), intensity(intensity)
+    : Object(pos, rot, Vec3f(1, 1, 1)), color(c), intensity(intensity)
 {
     shadowMap = nullptr;
     shadowMapSize = 0;
@@ -64,7 +64,7 @@ void Light::bakeShadows(const std::vector<Model*>& models, int shadowMapSize)
 
         for (int i = 0; i < mesh.n_vertices; i++)
         {
-            verts[i] = (mesh.rotation * mesh.vertices[i]) + mesh.position;
+            verts[i] = (mesh.rotation * (mesh.vertices[i] * mesh.scale)) + mesh.position;
             verts[i] = antiRot * (verts[i] - position);
             projected[i] = this->projectPoint(verts[i]);
         }
