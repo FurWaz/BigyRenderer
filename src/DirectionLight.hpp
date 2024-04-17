@@ -22,6 +22,8 @@ public:
 
     Vec2i projectPoint(const Vec3f& point) const
     {
+        if (point.z < 0) return Vec2i(-1, -1);
+
         Vec3f local = rotation.conjugate() * (point - position);
         Vec2f screen(point.x / size, point.y / size);
         return Vec2i(

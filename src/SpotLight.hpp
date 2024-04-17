@@ -23,7 +23,7 @@ public:
 
     Vec2i projectPoint(const Vec3f& point) const
     {
-        if (point.z > 0.f) return Vec2i(-1, -1);
+        // if (point.z > 0.f) return Vec2i(-1, -1);
 
         Vec2f screen(
             atan2(point.x, -point.z) / PI, // between -1 and 1

@@ -1,8 +1,10 @@
 # M = model : path / position / rotation
 M ../../resources/african_head 0,0,0 0,0,0
+M ../../resources/eye 0,0,0 0,0,0
 
 # L = light : type / color / intensity / range / cone_angle (spot only) / position / rotation
 # light types : [p]oint / [d]irectional / [s]pot
-L p 255,0,0 1.0 1.0 0.0 -0.5,0,1 0,0,0
-L p 0,0,255 1.0 1.0 0.0 0.5,0,1 0,0,0
-L p 0,255,0 1.0 1.0 0.0 0,1.5,1 0,0,0
+L s 255,0,0 2.0 8.0 1.0 -0.5,0,1 0,-0.4,0
+L s 0,0,255 2.0 8.0 1.0 0.5,0,1 0,0.4,0
+L s 0,255,0 2.0 8.0 1.0 0,1.5,1 -0.8,0,0
+L a 128,128,128 0.0 0.0 0.0 0,0,0 0,0,0

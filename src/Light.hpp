@@ -77,6 +77,11 @@ void Light::bakeShadows(const std::vector<Model*>& models, int shadowMapSize)
             Vec2i p2 = projected[tri.ver_i[1]];
             Vec2i p3 = projected[tri.ver_i[2]];
 
+            if (p1.x < 0 && p2.x < 0 && p3.x < 0) continue;
+            if (p1.y < 0 && p2.y < 0 && p3.y < 0) continue;
+            if (p1.x >= shadowMapSize && p2.x >= shadowMapSize && p3.x >= shadowMapSize) continue;
+            if (p1.y >= shadowMapSize && p2.y >= shadowMapSize && p3.y >= shadowMapSize) continue;
+
             Vec2i b1(
                 std::min(std::min(p1.x, p2.x), p3.x),
                 std::min(std::min(p1.y, p2.y), p3.y)
@@ -102,7 +107,7 @@ void Light::bakeShadows(const std::vector<Model*>& models, int shadowMapSize)
                         verts[tri.ver_i[2]] * bary.z;
                     float pixelDepth = local.length();
 
-                    if (pixelDepth < 0) continue;
+                    if (local.z > 0) continue;
                     if (pixelDepth < shadowMap[x + y * shadowMapSize])
                         shadowMap[x + y * shadowMapSize] = pixelDepth;
                 }

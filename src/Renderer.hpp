@@ -187,7 +187,10 @@ namespace Renderer
 
                         // get light intensity
                         for (Light* light : lights)
-                            finalColor += texColor * light->getColor() * light->getLighting(position, normal);
+                        {
+                            float lightAmount = light->getLighting(position, normal);
+                            finalColor += texColor * light->getColor() * pow(lightAmount, specularColor * 32.f + 1.f);
+                        }
 
                         im.setDepth(x, y, pixelDepth);
                         im.setPixel(x, y, finalColor);
