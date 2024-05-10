@@ -2,6 +2,8 @@
 
 Source code of a school project.
 The goal is to create a 3D rendering engine step by step, from scratch.
+![Render demo](./resources/render_example.png)
+
 
 ## Installation
 
