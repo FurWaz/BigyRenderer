@@ -22,7 +22,7 @@ int main(int argc, char const *argv[])
 
     if (argc < 2)
     {
-        std::cerr << "Usage: " << argv[0] << " <path_model>" << std::endl;
+        std::cerr << "Usage: " << argv[0] << " <path_scene>" << std::endl;
         return 1;
     }
 
@@ -49,9 +49,12 @@ int main(int argc, char const *argv[])
     }
     std::cout << "Done baking !" << std::endl;
 
+    std::cout << "Rendering ..." << std::endl;
     float rot = 0.f;
+    std::chrono::time_point<std::chrono::system_clock> start, end;
     while (loop)
     {
+        start = std::chrono::system_clock::now();
         rot += 0.03f;
         camera.position = Vec3f(
             cos(rot) * radius,
@@ -63,7 +66,14 @@ int main(int argc, char const *argv[])
         image.clear(scene.getAmbientLight());
         Renderer::RenderScene(image, camera, scene);
         image.save("./output.png");
+        end = std::chrono::system_clock::now();
+
+        std::chrono::duration<double> elapsed_seconds = end - start;
+
+        std::cout << "\rFPS : " << (int)(1 / elapsed_seconds.count()) << "   ";
     }
 
+    std::cout << std::endl;
+    std::cout << "Exiting ..." << std::endl;
     return 0;
 }

@@ -12,7 +12,7 @@ void Image::saveDepth(const std::string& path, int width, int height, float* dat
     for (int i = 0; i < width * height; i++)
     {
         float depth = data[i];
-        int value = depth * 64;
+        int value = (int)(depth * 64);
         if (value < 0) value = 0;
         if (value > 255) value = 255;
         img[i * 4] = value;
